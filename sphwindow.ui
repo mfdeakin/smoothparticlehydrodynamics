@@ -30,12 +30,74 @@
        </size>
       </property>
       <property name="title">
-       <string>GroupBox</string>
+       <string>Simulation Settings</string>
       </property>
+      <layout class="QVBoxLayout" name="verticalLayout">
+       <item>
+        <widget class="QLabel" name="label">
+         <property name="text">
+          <string>Render Settings</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QWidget" name="widget_2" native="true">
+         <layout class="QFormLayout" name="formLayout">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Framerate:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QDoubleSpinBox" name="dsbFPS">
+            <property name="maximum">
+             <double>999.990000000000009</double>
+            </property>
+            <property name="singleStep">
+             <double>10.000000000000000</double>
+            </property>
+            <property name="value">
+             <double>60.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="Line" name="line">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="label_2">
+         <property name="text">
+          <string>Simulation Settings</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="verticalSpacer">
+         <property name="orientation">
+          <enum>Qt::Vertical</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>20</width>
+           <height>40</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+      </layout>
      </widget>
     </item>
     <item>
-     <widget class="SPHrender" name="widget" native="true"/>
+     <widget class="SPHrender" name="sphDisplay" native="true"/>
     </item>
    </layout>
   </widget>
@@ -66,8 +128,28 @@
    <extends>QWidget</extends>
    <header>sphrender.h</header>
    <container>1</container>
+   <slots>
+    <slot>setFramerate(double)</slot>
+   </slots>
   </customwidget>
  </customwidgets>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>dsbFPS</sender>
+   <signal>valueChanged(double)</signal>
+   <receiver>sphDisplay</receiver>
+   <slot>setFramerate(double)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>138</x>
+     <y>102</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>325</x>
+     <y>172</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>

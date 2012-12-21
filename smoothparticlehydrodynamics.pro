@@ -13,11 +13,11 @@ TEMPLATE = app
 SOURCES += main.cpp\
         sphwindow.cpp \
     sphrender.cpp \
-    renderthread.cpp
+    simulator.cpp
 
 HEADERS  += sphwindow.h \
     sphrender.h \
-    renderthread.h
+    simulator.h
 
 FORMS    += sphwindow.ui
 

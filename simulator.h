@@ -6,28 +6,23 @@
 #include <QElapsedTimer>
 #include <QSize>
 
-class RenderThread : public QThread
+class Simulator : public QThread
 {
     Q_OBJECT
 public:
-    explicit RenderThread(QWidget *parent = 0);
-    void resize(QSize sz);
+    explicit Simulator(QWidget *parent = 0);
     void initialize();
     void run();
+    void render();
     void stop();
 signals:
     
 public slots:
     
 private:
-    void paintGL();
     void updateFPS();
-    void updateViewport();
 
-    bool doRender;
-    bool doResize;
-
-    QSize size;
+    bool doSimulate;
 
     unsigned maxticks;
     QList<qint64> tickwnd;

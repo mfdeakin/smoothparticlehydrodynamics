@@ -1,37 +1,68 @@
 #include "sphrender.h"
+#include <assert.h>
+#include <QtOpenGL>
+#include <QTimer>
 
 SPHrender::SPHrender(QWidget *parent) :
-    QGLWidget(parent), rendert(this)
-{}
+    QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer), parent),
+    sph(this), timer(new QTimer(this)), fps(60)
+{
+    connect(timer, SIGNAL(timeout()), this, SLOT(updateGL()));
+    setAutoBufferSwap(false);
+}
 
 SPHrender::~SPHrender()
 {
     /* Don't try to kill the thread while it's running */
-    rendert.stop();
-    rendert.wait();
+    sph.stop();
+    sph.wait();
 }
 
 void SPHrender::initializeGL()
 {
-    /* Hand the reins off to the other thread */
-    doneCurrent();
-    rendert.start();
+    glClearColor(0.0, 0.0, 0.0, 1.0);
+
+    glEnable(GL_DEPTH_TEST);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-0.5, 0.5, -0.5, 0.5, 0.1, 10.0);
+
+    setFramerate(fps);
+    sph.start();
 }
 
-void SPHrender::resizeEvent(QResizeEvent *evt)
+void SPHrender::paintGL()
 {
-    rendert.resize(evt->size());
-    if(!rendert.isRunning())
-        /* Qt will try to use the OpenGL context,
-         * but we don't want that. However, Qt
-         * will not call initializeGL without this,
-         * so let it do its stuff until OpenGL
-         * is initialized */
-        QGLWidget::resizeEvent(evt);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    static int angle = 0;
+    angle = (angle + 1) % 360;
+    glRotatef(angle, 0.0, 0.0, 1.0);
+    glClear(GL_COLOR_BUFFER_BIT);
+    /* Paint the background */
+    glClear(GL_DEPTH_BUFFER_BIT);
+    /* Paint the foreground */
+    glBegin(GL_TRIANGLE_STRIP);
+    glColor3f(1.0, 0.0, 0.0); glVertex3f(-0.5, -0.5, -1.0);
+    glColor3f(0.0, 1.0, 0.0); glVertex3f(-0.5, +0.5, -1.0);
+    glColor3f(0.0, 0.0, 1.0); glVertex3f(+0.5, -0.5, -1.0);
+    glEnd();
+    swapBuffers();
 }
 
-void SPHrender::paintEvent(QPaintEvent *evt)
+void SPHrender::resizeGL(int w, int h)
 {
-    /* Qt will try to use the OpenGL context,
-     * but we don't want that. */
+    int length = w < h ? w : h;
+    glViewport((w - length) / 2,
+               (h - length) / 2,
+               length, length);
+}
+
+void SPHrender::setFramerate(double fps)
+{
+    /* Calculate the number of milliseconds between each frame */
+    this->fps = fps;
+    timer->stop();
+    timer->start(1000.0 / fps);
 }

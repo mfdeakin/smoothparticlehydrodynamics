@@ -2,11 +2,12 @@
 #define SPHRENDER_H
 
 #include <QGLWidget>
-#include <QtOpenGL>
 
-#include "renderthread.h"
+#include "simulator.h"
 
-class RenderThread;
+class QTimer;
+
+class Simulator;
 
 class SPHrender : public QGLWidget
 {
@@ -15,12 +16,18 @@ public:
     explicit SPHrender(QWidget *parent = 0);
     virtual ~SPHrender();
 
+public slots:
+    void setFramerate(double fps);
+
 private:
     void initializeGL();
-    void resizeEvent(QResizeEvent *evt);
-    void paintEvent(QPaintEvent *evt);
+    void resizeGL(int w, int h);
+    void paintGL();
 
-    RenderThread rendert;
+    Simulator sph;
+    QTimer *timer;
+
+    float fps;
 };
 
 #endif // SPHRENDER_H
