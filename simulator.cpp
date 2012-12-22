@@ -1,11 +1,24 @@
 
 #include "simulator.h"
-#include "sphrender.h"
+
+#include <QList>
+#include <QElapsedTimer>
+
+#define FPSWINDOWSIZE 100
 
 Simulator::Simulator(QWidget *parent) :
-    QThread(parent), tickwnd(), ticks(),
-    nselapsed(0), maxticks(10)
+    QThread((QObject *)parent),
+    maxticks(FPSWINDOWSIZE),
+    tickwnd(new QList<qint64>()),
+    ticks(new QElapsedTimer()),
+    nselapsed(0)
 {}
+
+Simulator::~Simulator()
+{
+    delete tickwnd;
+    delete ticks;
+}
 
 void Simulator::stop()
 {
@@ -23,24 +36,19 @@ void Simulator::run()
 
 void Simulator::initialize()
 {
-    ticks.start();
+    ticks->start();
 }
 
 void Simulator::updateFPS()
 {
-    qint64 nsecs = ticks.nsecsElapsed();
+    qint64 nsecs = ticks->nsecsElapsed();
     nselapsed += nsecs;
-    ticks.start();
-    if(tickwnd.count() > maxticks) {
-        nselapsed -= tickwnd[0];
-        tickwnd.removeFirst();
+    ticks->start();
+    if(tickwnd->count() > maxticks) {
+        nselapsed -= (*tickwnd)[0];
+        tickwnd->removeFirst();
     }
-    tickwnd.append(nsecs);
-    float fps = tickwnd.count() * 1000000000.0f / nselapsed;
+    tickwnd->append(nsecs);
+    float fps = tickwnd->count() * 1000000000.0f / nselapsed;
 //    printf("fps: %.4f\n", fps);
-}
-
-void Simulator::render()
-{
-
 }

@@ -3,12 +3,14 @@
 #include <QtOpenGL>
 #include <QTimer>
 
+/* Factory for the format needed for rendering */
+QGLFormat createFormat();
+
 SPHrender::SPHrender(QWidget *parent) :
-    QGLWidget(QGLFormat(QGL::DoubleBuffer | QGL::DepthBuffer), parent),
+    QGLWidget(createFormat(), parent),
     sph(this), timer(new QTimer(this)), fps(60)
 {
     connect(timer, SIGNAL(timeout()), this, SLOT(updateGL()));
-    setAutoBufferSwap(false);
 }
 
 SPHrender::~SPHrender()
@@ -39,7 +41,9 @@ void SPHrender::paintGL()
     static int angle = 0;
     angle = (angle + 1) % 360;
     glRotatef(angle, 0.0, 0.0, 1.0);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT |
+            GL_DEPTH_BUFFER_BIT |
+            GL_STENCIL_BUFFER_BIT);
     /* Paint the background */
     glClear(GL_DEPTH_BUFFER_BIT);
     /* Paint the foreground */
@@ -48,7 +52,6 @@ void SPHrender::paintGL()
     glColor3f(0.0, 1.0, 0.0); glVertex3f(-0.5, +0.5, -1.0);
     glColor3f(0.0, 0.0, 1.0); glVertex3f(+0.5, -0.5, -1.0);
     glEnd();
-    swapBuffers();
 }
 
 void SPHrender::resizeGL(int w, int h)
@@ -65,4 +68,16 @@ void SPHrender::setFramerate(double fps)
     this->fps = fps;
     timer->stop();
     timer->start(1000.0 / fps);
+}
+
+QGLFormat createFormat()
+{
+    /* The format needs to be set up properly in *
+     * QGLWidgets constructor, so generate it here */
+    QGLFormat fmt(QGL::DoubleBuffer |
+                  QGL::DepthBuffer |
+                  QGL::StencilBuffer |
+                  QGL::DirectRendering);
+    fmt.setSwapInterval(0);
+    return fmt;
 }

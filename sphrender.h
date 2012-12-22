@@ -6,7 +6,6 @@
 #include "simulator.h"
 
 class QTimer;
-
 class Simulator;
 
 class SPHrender : public QGLWidget
