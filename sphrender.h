@@ -17,6 +17,11 @@ public:
 
 public slots:
     void setFramerate(double fps);
+    void setGravity(double G);
+    void setTimestep(double deltaT);
+    void stopSimulation();
+    void startSimulation();
+    void restartSimulation();
 
 private:
     void initializeGL();

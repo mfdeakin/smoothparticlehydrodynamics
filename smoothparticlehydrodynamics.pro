@@ -9,15 +9,18 @@ QT       += core gui opengl
 TARGET = smoothparticlehydrodynamics
 TEMPLATE = app
 
+QMAKE_CFLAGS += -std=c99
 
 SOURCES += main.cpp\
         sphwindow.cpp \
     sphrender.cpp \
-    simulator.cpp
+    simulator.cpp \
+    matrix.c
 
 HEADERS  += sphwindow.h \
     sphrender.h \
-    simulator.h
+    simulator.h \
+    matrix.h
 
 FORMS    += sphwindow.ui
 
